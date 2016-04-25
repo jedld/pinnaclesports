@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{ruby client for the pinnacle sports site}
   spec.description   = %q{ruby client for the pinnacle sports site}
-  spec.homepage      = "ruby client for the pinnacle sports site"
+  spec.homepage      = "https://github.com/jedld/pinnaclesports.git"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
