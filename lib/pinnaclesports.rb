@@ -20,21 +20,19 @@ module Pinnaclesports
     end
 
     def sports
-      JSON.parse(send_request_v2('sports'))
+      JSON.parse(send_request_v2('sports'))['sports']
     end
 
     def leagues(sport_id)
-      JSON.parse(send_request_v2('leagues', sportid: sport_id))
+      JSON.parse(send_request_v2('leagues', sportid: sport_id))['leagues']
+    end
+
+    def fixtures(sport_id, options = {})
+      query('fixtures', sport_id, options)
     end
 
     def odds(sport_id, options = {})
-      params = { sportid: sport_id }
-
-      params[:leagueIds] = options[:league_ids].join(',')  if options[:league_ids]
-      params[:since] if options[:since]
-
-      response = send_request_v1('odds', params)
-      JSON.parse(response)
+      query('odds', sport_id, options)
     end
 
     def self.pinnacle_feed
@@ -82,6 +80,25 @@ module Pinnaclesports
 
     private
 
+    def query(resource, sport_id, options = {})
+      response = nil
+      begin
+        params = { sportid: sport_id }
+
+        if options[:league_ids]
+          options[:league_ids] = options[:league_ids].is_a?(Array) ? options[:league_ids] : [options[:league_ids]]
+          params[:leagueIds] = options[:league_ids].join(',')
+        end
+
+        params[:since] = options[:since] if options[:since]
+        params[:oddsFormat] = options[:odds_format] ? options[:odds_format] : 'DECIMAL'
+
+        response = send_request_v1(resource, params)
+        JSON.parse(response.body)
+      rescue JSON::ParserError => e
+      end
+    end
+
     def send_request_v2(resource, params = {})
       headers = {
         'Authorization' => "Basic #{Base64.encode64("#{@username}:#{@password}")}"
@@ -96,8 +113,7 @@ module Pinnaclesports
         'Authorization' => "Basic #{Base64.encode64("#{@username}:#{@password}")}"
       }
 
-      response = HTTParty.get(API_URL_v1 + resource, query: params, headers: headers)
-      response.body
+      HTTParty.get(API_URL_v1 + resource, query: params, headers: headers)
     end
   end
 end
