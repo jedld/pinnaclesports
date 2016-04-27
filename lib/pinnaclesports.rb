@@ -31,6 +31,10 @@ module Pinnaclesports
       query('fixtures', sport_id, options)
     end
 
+    def settled_fixtures(sport_id, options = {})
+      query('settled_fixtures', sport_id, options)
+    end
+
     def odds(sport_id, options = {})
       query('odds', sport_id, options)
     end
@@ -96,6 +100,7 @@ module Pinnaclesports
         response = send_request_v1(resource, params)
         JSON.parse(response.body)
       rescue JSON::ParserError => e
+        puts e
       end
     end
 

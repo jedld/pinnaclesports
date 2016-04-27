@@ -8,3 +8,5 @@ puts client.sports
 puts client.leagues(1)
 
 puts client.odds(1)
+
+puts client.settled_fixtures
