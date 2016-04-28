@@ -32,7 +32,7 @@ module Pinnaclesports
     end
 
     def settled_fixtures(sport_id, options = {})
-      query('settled_fixtures', sport_id, options)
+      query('fixtures/settled', sport_id, options)
     end
 
     def odds(sport_id, options = {})
