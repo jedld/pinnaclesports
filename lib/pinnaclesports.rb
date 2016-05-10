@@ -5,6 +5,11 @@ require 'digest'
 require 'base64'
 
 module Pinnaclesports
+  class oddsFormat
+    DECIMAL = 'decimal'
+    AMERICAN = 'american'
+  end
+
   class Client
     FEED_URL = 'http://xml.pinnaclesports.com/pinnacleFeed.aspx'.freeze
     API_URL_v2 = 'https://api.pinnaclesports.com/v2/'.freeze
@@ -37,6 +42,26 @@ module Pinnaclesports
 
     def odds(sport_id, options = {})
       query('odds', sport_id, options)
+    end
+
+    def place_bet(request_id, sport_id, event_id, period_number, line_id, bettype, team_type, side, wager, options = {})
+      params = {
+        uniqueRequestId: request_id,
+        acceptBetterLine: true,
+        customerReference: options[:customer_reference],
+        oddsFormat: 'decimal',
+        stake: wager,
+        winRiskStake: options[:win_risk_type] || 'RISK',
+        sport_id: sport_id,
+        event_id: event_id,
+        periodNumber: period_number,
+        betType: bettype,
+        team: team_type,
+        side: side,
+        line_id: lineId,
+      }
+
+      HTTParty.post(API_URL_v1 + 'bets/place', query: params, headers: headers)
     end
 
     def self.pinnacle_feed
@@ -105,20 +130,18 @@ module Pinnaclesports
     end
 
     def send_request_v2(resource, params = {})
-      headers = {
-        'Authorization' => "Basic #{Base64.encode64("#{@username}:#{@password}")}"
-      }
-
       response = HTTParty.get(API_URL_v2 + resource, query: params, headers: headers)
       response.body
     end
 
     def send_request_v1(resource, params = {})
-      headers = {
+      HTTParty.get(API_URL_v1 + resource, query: params, headers: headers)
+    end
+
+    def headers
+      {
         'Authorization' => "Basic #{Base64.encode64("#{@username}:#{@password}")}"
       }
-
-      HTTParty.get(API_URL_v1 + resource, query: params, headers: headers)
     end
   end
 end
