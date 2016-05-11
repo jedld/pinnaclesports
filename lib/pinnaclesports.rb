@@ -5,7 +5,7 @@ require 'digest'
 require 'base64'
 
 module Pinnaclesports
-  class oddsFormat
+  class OddsFormat
     DECIMAL = 'decimal'
     AMERICAN = 'american'
   end
