@@ -44,24 +44,28 @@ module Pinnaclesports
       query('odds', sport_id, options)
     end
 
-    def place_bet(request_id, sport_id, event_id, period_number, line_id, bettype, team_type, side, wager, options = {})
+    def place_bet(request_id, sport_id, event_id, period_number, line_id, bettype, side, wager, options = {})
       params = {
         uniqueRequestId: request_id,
-        acceptBetterLine: true,
+        acceptBetterLine: 'TRUE',
         customerReference: options[:customer_reference],
-        oddsFormat: 'decimal',
+        oddsFormat: 'DECIMAL',
         stake: wager,
         winRiskStake: options[:win_risk_type] || 'RISK',
-        sport_id: sport_id,
-        event_id: event_id,
+        sportId: sport_id,
+        eventId: event_id,
         periodNumber: period_number,
         betType: bettype,
-        team: team_type,
-        side: side,
-        line_id: line_id,
+        lineId: line_id,
       }
 
-      HTTParty.post(API_URL_v1 + 'bets/place', query: params, headers: headers)
+      if ['MONEYLINE', 'SPREAD', 'TEAM_TOTAL_POINTS'].include?(bettype)
+        params.merge!(team: side)
+      elsif ['TOTAL_POINTS', 'TEAM_TOTAL_POINTS'].incude?(bettype)
+        params.merge!(side: side)
+      end
+
+      HTTParty.post(API_URL_v1 + 'bets/place', body: params.to_json, :headers => { 'Content-Type' => 'application/json', 'Authorization' => "Basic #{Base64.encode64("#{@username}:#{@password}")}" })
     end
 
     def self.pinnacle_feed
