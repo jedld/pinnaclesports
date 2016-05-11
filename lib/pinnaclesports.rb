@@ -58,7 +58,7 @@ module Pinnaclesports
         betType: bettype,
         team: team_type,
         side: side,
-        line_id: lineId,
+        line_id: line_id,
       }
 
       HTTParty.post(API_URL_v1 + 'bets/place', query: params, headers: headers)
