@@ -18,6 +18,30 @@ module Pinnaclesports
     def initialize(username, password, options = {})
       @username = username
       @password = password
+      @odds_format = options[:odds_format] || 'DECIMAL'
+    end
+
+    def line(sport_id, league_id, event_id, period_number, bet_type, selection, handicap = nil)
+      params = {
+        sportId: sport_id,
+        leagueId: league_id,
+        eventId: event_id,
+        periodNumber: period_number,
+        betType: bet_type,
+        oddsFormat: @odds_format,
+      }
+
+      if ['MONEYLINE', 'SPREAD', 'TEAM_TOTAL_POINTS'].include?(bet_type)
+        params.merge!(team: side)
+      elsif ['TOTAL_POINTS', 'TEAM_TOTAL_POINTS'].include?(bet_type)
+        params.merge!(side: side)
+      end
+
+      if ['SPREAD', 'TEAM_TOTAL_POINTS', 'TOTAL_POINTS'].include? bet_type
+        params.merge!(handicap: handicap)
+      end
+
+      send_request_v1('line', params)
     end
 
     def currencies
@@ -49,7 +73,7 @@ module Pinnaclesports
         uniqueRequestId: request_id,
         acceptBetterLine: 'TRUE',
         customerReference: options[:customer_reference],
-        oddsFormat: 'DECIMAL',
+        oddsFormat: @odds_format,
         stake: wager,
         winRiskStake: options[:win_risk_type] || 'RISK',
         sportId: sport_id,
@@ -124,7 +148,7 @@ module Pinnaclesports
         end
 
         params[:since] = options[:since] if options[:since]
-        params[:oddsFormat] = options[:odds_format] ? options[:odds_format] : 'DECIMAL'
+        params[:oddsFormat] = options[:odds_format] ? options[:odds_format] : @odds_format
 
         response = send_request_v1(resource, params)
         JSON.parse(response.body)
