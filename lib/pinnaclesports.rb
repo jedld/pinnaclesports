@@ -32,9 +32,9 @@ module Pinnaclesports
       }
 
       if ['MONEYLINE', 'SPREAD', 'TEAM_TOTAL_POINTS'].include?(bet_type)
-        params.merge!(team: side)
+        params.merge!(team: selection)
       elsif ['TOTAL_POINTS', 'TEAM_TOTAL_POINTS'].include?(bet_type)
-        params.merge!(side: side)
+        params.merge!(side: selection)
       end
 
       if ['SPREAD', 'TEAM_TOTAL_POINTS', 'TOTAL_POINTS'].include? bet_type
