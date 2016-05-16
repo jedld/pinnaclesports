@@ -22,7 +22,7 @@ module Pinnaclesports
     end
 
     def balance
-      JSON.parse(send_request_v1('client/balance'))
+      JSON.parse(send_request_v1('client/balance').body)
     end
 
     def line(sport_id, league_id, event_id, period_number, bet_type, selection, handicap = nil)
