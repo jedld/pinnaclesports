@@ -21,6 +21,10 @@ module Pinnaclesports
       @odds_format = options[:odds_format] || 'DECIMAL'
     end
 
+    def balance
+      JSON.parse(send_request_v1('client/balance'))
+    end
+
     def line(sport_id, league_id, event_id, period_number, bet_type, selection, handicap = nil)
       params = {
         sportId: sport_id,
