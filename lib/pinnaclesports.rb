@@ -16,6 +16,8 @@ module Pinnaclesports
     API_URL_v1 = 'https://api.pinnaclesports.com/v1/'.freeze
 
     def initialize(username, password, options = {})
+      @api_url_v2 = options[:api_url_v2] || API_URL_v2
+      @api_url_v1 = options[:api_url_v1] || API_URL_v1
       @username = username
       @password = password
       @odds_format = options[:odds_format] || 'DECIMAL'
@@ -93,7 +95,7 @@ module Pinnaclesports
         params.merge!(side: side)
       end
 
-      HTTParty.post(API_URL_v1 + 'bets/place', body: params.to_json, :headers => { 'Content-Type' => 'application/json', 'Authorization' => "Basic #{Base64.encode64("#{@username}:#{@password}")}" })
+      HTTParty.post(@api_url_v1 + 'bets/place', body: params.to_json, :headers => { 'Content-Type' => 'application/json', 'Authorization' => "Basic #{Base64.encode64("#{@username}:#{@password}")}" })
     end
 
     def self.pinnacle_feed
@@ -162,12 +164,12 @@ module Pinnaclesports
     end
 
     def send_request_v2(resource, params = {})
-      response = HTTParty.get(API_URL_v2 + resource, query: params, headers: headers)
+      response = HTTParty.get(@api_url_v2 + resource, query: params, headers: headers)
       response.body
     end
 
     def send_request_v1(resource, params = {})
-      HTTParty.get(API_URL_v1 + resource, query: params, headers: headers)
+      HTTParty.get(@api_url_v1 + resource, query: params, headers: headers)
     end
 
     def headers
