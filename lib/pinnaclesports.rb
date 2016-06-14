@@ -58,6 +58,10 @@ module Pinnaclesports
       JSON.parse(send_request_v2('sports'))['sports']
     end
 
+    def debug
+      HTTParty.get(@api_url_v2 + 'sports', query: {}, headers: headers)
+    end
+
     def leagues(sport_id)
       JSON.parse(send_request_v2('leagues', sportid: sport_id))['leagues']
     end
